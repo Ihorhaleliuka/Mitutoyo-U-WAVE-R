@@ -51,6 +51,7 @@ else:
         stat = path.stat()
         backup.write_bytes(original)
         backup.chmod(0o600)
+        os.chown(backup, stat.st_uid, stat.st_gid)
         temp.write_text(json.dumps(flow, indent=2))
         temp.chmod(stat.st_mode & 0o777)
         os.chown(temp, stat.st_uid, stat.st_gid)
