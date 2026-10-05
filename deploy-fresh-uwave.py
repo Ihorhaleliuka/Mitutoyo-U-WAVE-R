@@ -64,7 +64,10 @@ try { data = JSON.parse(String(msg.payload).trim()); }
 catch (e) { node.warn("Invalid U-WAVE JSON"); return null; }
 if (!data.receiver || !/^[A-Za-z0-9_-]+$/.test(data.receiver) ||
     !/^[A-Za-z0-9_-]+$/.test(data.type || 'raw')) return null;
-msg.topic = `mitutoyo/uwave/${data.receiver}/${data.type || 'raw'}`;
+const deviceId = String(data.receiverDeviceId || '');
+msg.topic = /^\\d{10}$/.test(deviceId) && deviceId !== '0000000000'
+    ? `mitutoyo/uwave/${deviceId}/${data.type || 'raw'}`
+    : `mitutoyo/uwave/unidentified/${data.receiver}/${data.type || 'raw'}`;
 msg.payload = Object.assign({port:null, raw:null, channel:null, value:null, unit:null,
     receiverDeviceId:null, transmitterDeviceId:null}, data);
 msg.qos = '1';

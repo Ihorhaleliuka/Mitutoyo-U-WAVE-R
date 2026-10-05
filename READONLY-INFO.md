@@ -18,7 +18,11 @@ embeds the legacy aggregator and INIT behavior and would overwrite this upgrade.
 
 ## MQTT contract
 
-Topics remain `mitutoyo/uwave/<USB_SERIAL>/<type>`. JSON payloads include
+Topics are `mitutoyo/uwave/<receiverDeviceId>/<type>`. If the receiver ID has not
+been read yet, events go to `mitutoyo/uwave/unidentified/<USB_SERIAL>/<type>`.
+Run `migrate-mqtt-topics.py --container <name> --function-id <id>` as root to
+migrate an existing flow with backup. USB serial remains in the payload.
+JSON payloads include
 `receiver`, `receiverUsbSerial`, `port`, `type`, `raw`, `ts` and available IDs.
 ID fields are strings; unavailable information is null, never a guessed ID.
 
@@ -58,7 +62,7 @@ sudo systemctl status mitutoyo-uwave-aggregator
 sudo journalctl -u mitutoyo-uwave-aggregator -n 30 --no-pager
 ```
 
-Subscribe to `mitutoyo/uwave/<USB_SERIAL>/#` using the existing broker credentials.
+Subscribe to `mitutoyo/uwave/<receiverDeviceId>/#` using the existing broker credentials.
 Do not open the physical serial port with another reader while the service runs.
 
 Protocol reference: Mitutoyo U-WAVEPAK manual 99MAL216A, section 6.1:
